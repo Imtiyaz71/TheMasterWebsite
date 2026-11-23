@@ -1,0 +1,783 @@
+<!-- TOAST NOTIFICATION -->
+@if (toastMessage()) {
+  <div class="toast-alert">
+    <div class="toast-content">
+      <span class="toast-icon">✓</span>
+      <span>{{ toastMessage() }}</span>
+    </div>
+  </div>
+}
+
+<div class="website-wrapper">
+  <!-- TOP ANNOUNCEMENT BAR -->
+  <div class="top-announcement-bar">
+    <div class="announcement-container">
+      <div class="announcement-left">
+        <span class="announcement-badge">অফার</span>
+        <span>সকল প্রফেশনাল আইটি কোর্সে পাচ্ছেন বিশেষ ছাড়! সীমিত সময়ের সুযোগ।</span>
+      </div>
+      <div class="announcement-right">
+        <span>📞 হেল্পলাইন: ০১৭০০-০০০০০০</span>
+        <span class="divider">|</span>
+        <span>✉️ support@themaster.com</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION BAR -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="brand" (click)="activeView.set('home')">
+        <img src="assets/logo.jpg" alt="The Master" class="brand-logo-img" />
+        <div class="brand-text">
+          <div class="brand-title">THE MASTER</div>
+          <div class="brand-tagline">শেখার নতুন দিগন্ত • Learn Today. Master Tomorrow.</div>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <button [class.active]="activeView() === 'home'" (click)="activeView.set('home')">
+          সকল কোর্স (All Courses)
+        </button>
+
+        @if (isLoggedIn()) {
+          <button [class.active]="activeView() === 'my-courses'" (click)="activeView.set('my-courses')">
+            আমার ড্যাশবোর্ড (My Learning)
+            <span class="order-count-pill">{{ myOrders().length }}</span>
+          </button>
+        }
+      </nav>
+
+      <div class="auth-actions">
+        @if (!isLoggedIn()) {
+          <button class="btn btn-outline" (click)="openAuthModal('login')">
+            লগইন (Sign In)
+          </button>
+          <button class="btn btn-primary" (click)="openAuthModal('register')">
+            ফ্রি রেজিস্ট্রেশন
+          </button>
+        } @else {
+          <div class="user-profile">
+            <div class="user-avatar">{{ userName().charAt(0).toUpperCase() }}</div>
+            <div class="user-info">
+              <span class="user-name">{{ userName() }}</span>
+              <span class="user-role-badge">Student</span>
+            </div>
+            <button class="btn-logout" title="Sign Out" (click)="logout()">✕</button>
+          </div>
+        }
+      </div>
+    </div>
+  </header>
+
+  <!-- VIEW 1: HOME & CATALOG -->
+  @if (activeView() === 'home') {
+    <!-- HERO SLIDER SECTION -->
+    <section class="hero-slider-section" (mouseenter)="onSliderMouseEnter()" (mouseleave)="onSliderMouseLeave()">
+      <div class="slider-viewport">
+        @for (slide of slides; track $index) {
+          <div class="slide-item" [class.active]="currentSlide() === $index">
+            <div class="slide-container">
+              <div class="slide-text-col">
+                <div class="slide-badge">
+                  <span class="badge-dot"></span>
+                  {{ slide.badge }}
+                </div>
+
+                <h1 class="slide-title">{{ slide.title }}</h1>
+                <h2 class="slide-subtitle-en">{{ slide.titleEn }}</h2>
+                <p class="slide-desc">{{ slide.description }}</p>
+
+                <div class="slide-meta-row">
+                  <div class="meta-item">
+                    <span class="check-icon">✓</span>
+                    <span>হ্যান্ডস-অন প্রজেক্ট</span>
+                  </div>
+                  <div class="meta-item">
+                    <span class="check-icon">✓</span>
+                    <span>লাইফটাইম কোর্স অ্যাক্সেস</span>
+                  </div>
+                  <div class="meta-item">
+                    <span class="check-icon">✓</span>
+                    <span>কোর্স শেষে সার্টিফিকেট</span>
+                  </div>
+                </div>
+
+                <div class="slide-cta-row">
+                  <a href="#courses-catalog" class="btn btn-primary-lg">
+                    কোর্সগুলো দেখুন →
+                  </a>
+                  <button class="btn btn-outline-lg" (click)="openAuthModal('register')">
+                    এখনই শুরু করুন
+                  </button>
+                </div>
+              </div>
+
+              <div class="slide-image-col">
+                <div class="image-card-wrapper">
+                  <img [src]="slide.image" [alt]="slide.title" class="slide-hero-image" />
+                  <div class="image-overlay-card">
+                    <div class="overlay-brand">
+                      <img src="assets/logo.jpg" alt="Logo" class="mini-crest" />
+                      <div>
+                        <strong>The Master Academy</strong>
+                        <small>{{ slide.stats }}</small>
+                      </div>
+                    </div>
+                    <span class="verified-tag">★ ভেরিফাইড কোর্স</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- SLIDER CONTROLS -->
+        <button class="slider-arrow arrow-prev" (click)="prevSlide()" aria-label="Previous Slide">‹</button>
+        <button class="slider-arrow arrow-next" (click)="nextSlide()" aria-label="Next Slide">›</button>
+
+        <!-- SLIDER DOTS -->
+        <div class="slider-dots">
+          @for (s of slides; track $index) {
+            <button 
+              class="slider-dot" 
+              [class.active]="currentSlide() === $index" 
+              (click)="goToSlide($index)"
+              [title]="'Slide ' + ($index + 1)">
+            </button>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- KEY STATS SECTION -->
+    <section class="stats-section">
+      <div class="section-container">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon-wrap icon-blue">👥</div>
+            <div class="stat-info">
+              <div class="stat-number">৫,০০০+</div>
+              <div class="stat-label">সফল শিক্ষার্থী ও পেশাজীবী</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrap icon-amber">🎯</div>
+            <div class="stat-info">
+              <div class="stat-number">১০০% প্র্যাক্টিক্যাল</div>
+              <div class="stat-label">বাস্তবমুখী প্রজেক্ট কারিকুলাম</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrap icon-green">📜</div>
+            <div class="stat-info">
+              <div class="stat-number">সার্টিফিকেট</div>
+              <div class="stat-label">ভেরিফাইড কোর্স সমাপনী স্বীকৃতি</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrap icon-purple">⭐</div>
+            <div class="stat-info">
+              <div class="stat-number">৪.৯ / ৫.০</div>
+              <div class="stat-label">লার্নার স্যাটিসফ্যাকশন স্কোর</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- POPULAR CATEGORIES SECTION -->
+    <section class="categories-section">
+      <div class="section-container">
+        <div class="section-heading text-center">
+          <span class="heading-badge">ক্যাটাগরি সমূহ</span>
+          <h2>আপনার পছন্দের ক্ষেত্রে স্কিল ডেভেলপ করুন</h2>
+          <p>মার্কেটপ্লেস ও কর্পোরেট সেক্টরে হাই-ডিমান্ড আইটি স্কিলগুলো বেছে নিন</p>
+        </div>
+
+        <div class="categories-grid">
+          <div class="category-card" [class.active]="selectedCategory() === 'Digital Marketing'" (click)="selectedCategory.set('Digital Marketing')">
+            <div class="cat-icon-box">📊</div>
+            <h3>ডিজিটাল মার্কেটিং</h3>
+            <p>ফেসবুক ও গুগল অ্যাডস, সেলস ফানেল ও ক্যাম্পেইন</p>
+          </div>
+
+          <div class="category-card" [class.active]="selectedCategory() === 'SEO'" (click)="selectedCategory.set('SEO')">
+            <div class="cat-icon-box">🔍</div>
+            <h3>এসইও (SEO)</h3>
+            <p>গুগল ১ম পেজ র‍্যাংকিং ও কি-ওয়ার্ড রিসার্চ</p>
+          </div>
+
+          <div class="category-card" [class.active]="selectedCategory() === 'Graphic Design'" (click)="selectedCategory.set('Graphic Design')">
+            <div class="cat-icon-box">🎨</div>
+            <h3>গ্রাফিক ডিজাইন</h3>
+            <p>ফটোশপ, ইলাস্ট্রেটর ও ব্র্যান্ডিং ডিজাইন</p>
+          </div>
+
+          <div class="category-card" [class.active]="selectedCategory() === 'Video Editing'" (click)="selectedCategory.set('Video Editing')">
+            <div class="cat-icon-box">🎬</div>
+            <h3>ভিডিও এডিটিং</h3>
+            <p>প্রিমিয়ার প্রো, মোশন ও ইউটিউব কনটেন্ট এডিটিং</p>
+          </div>
+
+          <div class="category-card" [class.active]="selectedCategory() === 'UI/UX Design'" (click)="selectedCategory.set('UI/UX Design')">
+            <div class="cat-icon-box">📱</div>
+            <h3>ইউআই / ইউএক্স</h3>
+            <p>ফিগমা দিয়ে ওয়েবসাইট ও মোবাইল অ্যাপ ডিজাইন</p>
+          </div>
+
+          <div class="category-card" [class.active]="selectedCategory() === 'Freelancing'" (click)="selectedCategory.set('Freelancing')">
+            <div class="cat-icon-box">💼</div>
+            <h3>ফ্রিল্যান্সিং ক্যারিয়ার</h3>
+            <p>Fiverr ও Upwork-এ ক্লায়েন্ট হ্যান্ডেলিং গাইড</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COURSES CATALOG SECTION -->
+    <section class="courses-section" id="courses-catalog">
+      <div class="section-container">
+        <div class="section-heading text-center">
+          <div class="heading-brand-crest">
+            <img src="assets/logo.jpg" alt="The Master Crest" class="crest-icon" />
+            <span class="heading-badge">জনপ্রিয় কোর্সসমূহ</span>
+          </div>
+          <h2>আমাদের সকল প্রফেশনাল আইটি কোর্স</h2>
+          <p>যে কোনো কোর্স কিনে আজই সম্পূর্ণ প্র্যাক্টিক্যাল ক্লাস শুরু করুন</p>
+        </div>
+
+        <!-- SEARCH & FILTER TABS -->
+        <div class="filter-wrapper">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input 
+              type="text" 
+              placeholder="কোর্স খুঁজুন (উদা: ডিজিটাল মার্কেটিং, এসইও, ডিজাইন)..." 
+              [ngModel]="searchQuery()" 
+              (ngModelChange)="searchQuery.set($event)"
+              class="search-input" />
+            @if (searchQuery()) {
+              <button class="btn-clear" (click)="searchQuery.set('')">✕</button>
+            }
+          </div>
+
+          <div class="category-tabs">
+            @for (cat of categories(); track cat) {
+              <button 
+                class="tab-btn" 
+                [class.active]="selectedCategory() === cat"
+                (click)="selectedCategory.set(cat)">
+                {{ cat === 'All' ? 'সব কোর্স (All)' : cat }}
+              </button>
+            }
+          </div>
+        </div>
+
+        @if (loadingCourses()) {
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <p>কোর্সের তথ্য লোড হচ্ছে...</p>
+          </div>
+        }
+
+        <!-- COURSES GRID -->
+        <div class="courses-grid">
+          @for (course of filteredCourses(); track course.id) {
+            <div class="course-card">
+              <div class="card-thumbnail-wrapper">
+                <img 
+                  [src]="course.thumbnailUrl || 'assets/logo.jpg'" 
+                  [alt]="course.title" 
+                  class="card-img" 
+                  loading="lazy" />
+                <span class="category-tag">{{ course.subject || 'IT Training' }}</span>
+                <span class="validity-tag">⏳ {{ course.validityDays }} দিন অ্যাক্সেস</span>
+              </div>
+
+              <div class="card-content">
+                <div class="card-meta-top">
+                  <span class="rating-stars">★★★★★ <strong>4.9</strong></span>
+                  <span class="video-count">📹 {{ course.totalVideos || 0 }} টি ক্লাস</span>
+                </div>
+
+                <h3 class="course-title">{{ course.title }}</h3>
+                <p class="course-description">{{ course.description || 'বাস্তবমুখী প্রজেক্ট ও পূর্ণাঙ্গ গাইডলাইনসহ স্টেপ-বাই-স্টেপ প্র্যাক্টিক্যাল ট্রেনিং।' }}</p>
+
+                <div class="feature-bullets">
+                  <div class="bullet-item">✓ এইচডি রেকর্ডেড ক্লাস ও রিসোর্স ফাইল</div>
+                  <div class="bullet-item">✓ লাইফটাইম সাপোর্ট ও প্রজেক্ট রিভিউ</div>
+                </div>
+
+                <div class="card-footer">
+                  <div class="pricing-box">
+                    <span class="price-current">৳ {{ course.discountPrice || course.price }}</span>
+                    @if (course.discountPrice && course.discountPrice < course.price) {
+                      <span class="price-original">৳ {{ course.price }}</span>
+                      <span class="discount-pill">
+                        -{{ ((course.price - course.discountPrice) / course.price * 100) | number:'1.0-0' }}% ছাড়
+                      </span>
+                    }
+                  </div>
+
+                  <div class="action-buttons">
+                    <button class="btn btn-outline-sm" (click)="openPreview(course)">
+                      সিলেবাস
+                    </button>
+                    <button class="btn btn-primary-sm" (click)="startEnrollment(course)">
+                      এনরোল করুন →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          } @empty {
+            @if (!loadingCourses()) {
+              <div class="empty-state">
+                <div class="empty-icon">📂</div>
+                <h3>কোনো কোর্স খুঁজে পাওয়া যায়নি</h3>
+                <p>আপনার ফিল্টার রিসেট করে পুনরায় চেষ্টা করুন।</p>
+                <button class="btn btn-primary-sm mt-3" (click)="searchQuery.set(''); selectedCategory.set('All')">ফিল্টার রিসেট করুন</button>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY CHOOSE THE MASTER SECTION -->
+    <section class="why-choose-section">
+      <div class="section-container">
+        <div class="section-heading text-center">
+          <span class="heading-badge">আমাদের বিশেষত্ব</span>
+          <h2>The Master এ কেন শিখবেন?</h2>
+          <p>আমরা শিক্ষার্থীদের মানসম্মত শিক্ষা ও দক্ষ পেশাজীবী হিসেবে গড়ে তুলতে বদ্ধপরিকর</p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon icon-blue">💼</div>
+            <h3>হ্যান্ডস-অন প্র্যাক্টিক্যাল ট্রেনিং</h3>
+            <p>থিওরির চেয়ে বাস্তব প্রজেক্টে বেশি গুরুত্ব দেওয়া হয়, যেন কোর্স শেষেই ক্লায়েন্ট প্রজেক্ট হ্যান্ডেল করতে পারেন।</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon icon-amber">🎬</div>
+            <h3>প্রিমিয়াম রেকর্ডেড ভিডিও ক্লাস</h3>
+            <p>যেকোনো সময়, আপনার সুবিধাজনক সময়ে হাই-কোয়ালিটি ভিডিও ক্লাসগুলো দেখার ও রিভিশন দেওয়ার পূর্ণ স্বাধীনতা।</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon icon-green">⚡</div>
+            <h3>সহজ ও নিরাপদ পেমেন্ট</h3>
+            <p>বিকাশ, নগদ, রকেট অথবা যেকোনো ব্যাংক কার্ড দিয়ে সহজেই ফি পরিশোধ করুন এবং সাথে সাথেই অ্যাক্সেস পান।</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon icon-purple">🤝</div>
+            <h3>সার্বক্ষণিক মেন্টরশিপ সাপোর্ট</h3>
+            <p>কাজ করার সময় কোথাও সমস্যা হলে সরাসরি অভিজ্ঞ মেন্টর ও ট্রেইনারদের কাছ থেকে সহায়তা ও দিকনির্দেশনা পাবেন।</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STUDENT TESTIMONIALS (DYNAMIC) -->
+    <section class="testimonials-section">
+      <div class="section-container">
+        <div class="section-heading text-center">
+          <span class="heading-badge">মতামত ও অভিজ্ঞতা</span>
+          <h2>আমাদের শিক্ষার্থীদের সাফল্যের গল্প</h2>
+          <p>The Master থেকে স্কিল ডেভেলপ করে যারা নিজেদের ক্যারিয়ার গড়েছেন</p>
+        </div>
+
+        <div class="testimonials-grid">
+          @for (t of testimonials(); track t.id) {
+            <div class="testimonial-card">
+              <div class="stars" [title]="t.rating + ' Star Rating'">
+                {{ '★'.repeat(t.rating) }}
+              </div>
+              <p class="quote">"{{ t.speech }}"</p>
+              <div class="user-meta">
+                @if (t.avatarUrl) {
+                  <img [src]="t.avatarUrl" [alt]="t.studentName" class="avatar" loading="lazy" />
+                } @else {
+                  <div class="avatar">{{ t.studentName.charAt(0) }}</div>
+                }
+                <div>
+                  <strong>{{ t.studentName }}</strong>
+                  <small>{{ t.designation }}</small>
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-state text-center" style="grid-column: 1 / -1; padding: 2rem;">
+              <p>শীঘ্রই শিক্ষার্থীদের নতুন রিভিউ যুক্ত হচ্ছে...</p>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- VIEW 2: STUDENT MY COURSES / LEARNING -->
+  @if (activeView() === 'my-courses') {
+    <section class="my-courses-section">
+      <div class="section-container">
+        <div class="section-heading text-center">
+          <div class="heading-brand-crest">
+            <img src="assets/logo.jpg" alt="Logo" class="crest-icon" />
+            <span class="heading-badge">আমার ড্যাশবোর্ড</span>
+          </div>
+          <h2>আমার এনরোল করা কোর্সসমূহ</h2>
+          <p>আপনার সকল কোর্সের ভিডিও এবং রিসোর্স অ্যাক্সেস লিংক এখান থেকে ওপেন করুন</p>
+        </div>
+
+        <div class="my-orders-list">
+          @for (order of myOrders(); track order.id) {
+            <div class="enrolled-order-card">
+              <div class="order-card-header">
+                <div class="order-id">ইনভয়েস নং #{{ order.orderNumber }}</div>
+                <div class="status-tags">
+                  <span class="badge" [class.badge-success]="order.paymentStatus === 'Paid'" [class.badge-pending]="order.paymentStatus === 'Pending'">
+                    পেমেন্ট: {{ order.paymentStatus === 'Paid' ? 'পরিশোধিত (Paid)' : 'পেন্ডিং (Pending)' }}
+                  </span>
+                  <span class="badge" [class.badge-success]="order.driveAccessStatus === 'Granted'" [class.badge-warning]="order.driveAccessStatus === 'Pending'">
+                    অ্যাক্সেস: {{ order.driveAccessStatus === 'Granted' ? 'অনুমোদিত (Active)' : 'প্রক্রিয়াধীন' }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="order-card-body">
+                <h3 class="course-name">{{ order.courseTitle }}</h3>
+                <div class="order-details-row">
+                  <span>📅 তারিখ: {{ order.createdAt | date:'mediumDate' }}</span>
+                  <span>💰 ফি: ৳ {{ order.amount }}</span>
+                  <span>✉️ ইমেইল: <code>{{ userEmail() }}</code></span>
+                </div>
+
+                @if (order.driveAccessStatus === 'Pending') {
+                  <div class="info-alert-box">
+                    ⏳ আপনার কোর্সের অ্যাক্সেস আপনার নিবন্ধিত ইমেইলে প্রস্তুত করা হচ্ছে। কিছুক্ষণের মধ্যে এটি সম্পূর্ণ চালু হয়ে যাবে।
+                  </div>
+                } @else {
+                  <div class="success-alert-box">
+                    ✓ কোর্সের সম্পূর্ণ ভিডিও এবং রিসোর্স এক্সেস সক্রিয় রয়েছে। নিচের বাটনে ক্লিক করে ক্লাসরুম ওপেন করুন।
+                  </div>
+                }
+              </div>
+
+              <div class="order-card-footer">
+                <a [href]="order.driveFolderLink" target="_blank" rel="noopener noreferrer" class="btn btn-primary-block">
+                  ▶ ক্লাসরুম ও রিসোর্স ফোল্ডার ওপেন করুন ↗
+                </a>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-state-card text-center">
+              <div class="empty-icon">🎓</div>
+              <h3>আপনি এখনও কোনো কোর্সে এনরোল করেননি</h3>
+              <p>আমাদের জনপ্রিয় কোর্সগুলো দেখে আপনার স্কিল ডেভেলপমেন্ট শুরু করুন।</p>
+              <button class="btn btn-primary mt-3" (click)="activeView.set('home')">কোর্স ক্যাটালগ দেখুন →</button>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-top-row">
+        <div class="footer-col-brand">
+          <div class="footer-logo-wrap">
+            <img src="assets/logo.jpg" alt="The Master" class="footer-logo" />
+            <div class="footer-brand-text">THE MASTER</div>
+          </div>
+          <div class="footer-slogan">শেখার নতুন দিগন্ত • Learn Today. Master Tomorrow.</div>
+          <p class="footer-desc">
+            বাংলাদেশের অন্যতম বিশ্বস্ত প্রফেশনাল অনলাইন স্কিল ট্রেনিং প্ল্যাটফর্ম। আধুনিক আইটি ও ক্রিয়েটিভ স্কিল অর্জনের নির্ভরযোগ্য মাধ্যম।
+          </p>
+        </div>
+
+        <div class="footer-col-links">
+          <h4>কুইক লিংকস</h4>
+          <ul>
+            <li><a (click)="activeView.set('home')">সকল কোর্স</a></li>
+            <li><a (click)="activeView.set('my-courses')">আমার ড্যাশবোর্ড</a></li>
+            <li><a (click)="openAuthModal('login')">লগইন পোর্টাল</a></li>
+            <li><a (click)="openAuthModal('register')">রেজিস্ট্রেশন</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col-payment">
+          <h4>নিরাপদ পেমেন্ট মাধ্যম</h4>
+          <p>বিকাশ, নগদ, রকেট এবং যেকোনো ভিসা বা মাস্টারকার্ড দিয়ে সুরক্ষিত পেমেন্টের নিশ্চয়তা।</p>
+          <div class="payment-badges-list">
+            <span class="pay-tag">বিকাশ (bKash)</span>
+            <span class="pay-tag">নগদ (Nagad)</span>
+            <span class="pay-tag">রকেট (Rocket)</span>
+            <span class="pay-tag">Visa</span>
+            <span class="pay-tag">Mastercard</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom-row">
+        <p>&copy; 2026 <strong>The Master</strong>. All rights reserved. শেখার নতুন দিগন্ত।</p>
+        <p class="copyright-right">Professional IT & Career Training Center</p>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- MODAL: COURSE SYLLABUS / PREVIEW -->
+@if (previewCourse()) {
+  <div class="modal-backdrop" (click)="closePreview()">
+    <div class="modal-card preview-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-logo-row">
+          <img src="assets/logo.jpg" alt="Logo" class="modal-logo" />
+          <div>
+            <h3>{{ previewCourse()?.title }}</h3>
+            <span class="modal-category">{{ previewCourse()?.subject }}</span>
+          </div>
+        </div>
+        <button class="btn-close" (click)="closePreview()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="preview-banner">
+          <img [src]="previewCourse()?.thumbnailUrl || 'assets/logo.jpg'" [alt]="previewCourse()?.title" class="preview-img" />
+        </div>
+
+        <div class="preview-content">
+          <h4>কোর্স পরিচিতি:</h4>
+          <p>{{ previewCourse()?.description }}</p>
+
+          <h4 class="mt-4">কারিকুলাম ও ক্লাসের তালিকা:</h4>
+          @if (previewCourse()?.lessons && (previewCourse()?.lessons?.length || 0) > 0) {
+            <div class="lessons-list">
+              @for (lesson of previewCourse()?.lessons || []; track lesson.id) {
+                <div class="lesson-item">
+                  <span class="lesson-num">#{{ lesson.lessonNumber }}</span>
+                  <div class="lesson-title-box">
+                    <strong>{{ lesson.title }}</strong>
+                    @if (lesson.description) {
+                      <small>{{ lesson.description }}</small>
+                    }
+                  </div>
+                  @if (lesson.durationMinutes > 0) {
+                    <span class="duration-tag">⏱ {{ lesson.durationMinutes }} মিনিট</span>
+                  }
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="default-curriculum-notice">
+              <p>✓ মোট {{ previewCourse()?.totalVideos || 0 }} টি প্রিমিয়াম রেকর্ডেড ক্লাস ও প্র্যাক্টিস ফাইল ক্রমানুসারে সাজানো রয়েছে।</p>
+              <p>✓ প্রতিটি ক্লাসের সাথে রয়েছে প্রয়োজনীয় সফটওয়্যার টুলস ও রিসোর্স লিংক।</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <div class="price-display">
+          <span class="current-price">৳ {{ previewCourse()?.discountPrice || previewCourse()?.price }}</span>
+          @if (previewCourse()?.discountPrice) {
+            <span class="old-price">৳ {{ previewCourse()?.price }}</span>
+          }
+        </div>
+        <button class="btn btn-primary" (click)="closePreview(); startEnrollment(previewCourse()!)">
+          এনরোল করুন →
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- MODAL: CHECKOUT & PAYMENT -->
+@if (showCheckoutModal()) {
+  <div class="modal-backdrop" (click)="showCheckoutModal.set(false)">
+    <div class="modal-card checkout-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-logo-row">
+          <img src="assets/logo.jpg" alt="Logo" class="modal-logo" />
+          <div>
+            <h3>কোর্স এনরোলমেন্ট ও পেমেন্ট</h3>
+            <small>নিরাপদ অনলাইন পেমেন্ট</small>
+          </div>
+        </div>
+        <button class="btn-close" (click)="showCheckoutModal.set(false)">×</button>
+      </div>
+
+      <div class="modal-body">
+        @if (checkoutLoading()) {
+          <div class="loading-state text-center py-4">
+            <div class="spinner"></div>
+            <p>পেমেন্ট প্রসেসিং হচ্ছে...</p>
+          </div>
+        } @else if (lastPaymentInit()) {
+          <div class="checkout-summary">
+            <div class="summary-item">
+              <span>কোর্স:</span>
+              <strong>{{ lastPaymentInit().order?.courseTitle }}</strong>
+            </div>
+            <div class="summary-item">
+              <span>শিক্ষার্থী:</span>
+              <span>{{ lastPaymentInit().order?.userFullName }}</span>
+            </div>
+            <div class="summary-item">
+              <span>অ্যাক্সেস ইমেইল:</span>
+              <strong class="email-highlight">{{ lastPaymentInit().order?.userEmail }}</strong>
+            </div>
+            <div class="summary-item total-item">
+              <span>মোট পরিশোধযোগ্য ফি:</span>
+              <span class="total-price">৳ {{ lastPaymentInit().order?.amount }}</span>
+            </div>
+
+            <div class="payment-actions-wrapper">
+              <h4>পেমেন্ট সম্পন্ন করুন</h4>
+              <p>বিকাশ, নগদ, রকেট অথবা যেকোনো ব্যাংক কার্ড দিয়ে ফি পরিশোধ করুন।</p>
+
+              <!-- DIRECT PAYMENT GATEWAY BUTTON -->
+              <button class="btn btn-primary-block btn-payment-action" (click)="payWithGateway(lastPaymentInit().payment?.gatewayPageURL)">
+                💳 বিকাশ / নগদ / কার্ডে পেমেন্ট করুন ↗
+              </button>
+
+              <!-- LOCAL DEMO SIMULATION BUTTON -->
+              <div class="demo-box mt-3">
+                <small class="demo-caption">লোকাল ডেমো টেস্ট করার জন্য ইনস্ট্যান্ট অ্যাক্টিভেশন বাটন:</small>
+                <button class="btn btn-outline-sm btn-block mt-2" (click)="simulateSuccess(lastPaymentInit().order?.transactionId)">
+                  ⚡ Instant Demo Activation (টেস্ট পেমেন্ট)
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+<!-- MODAL: AUTH (LOGIN & REGISTER) -->
+@if (showAuthModal()) {
+  <div class="modal-backdrop" (click)="closeAuthModal()">
+    <div class="modal-card auth-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-logo-row">
+          <img src="assets/logo.jpg" alt="Logo" class="modal-logo" />
+          <div>
+            <h3>The Master</h3>
+            <small>শেখার নতুন দিগন্ত</small>
+          </div>
+        </div>
+        <button class="btn-close" (click)="closeAuthModal()">×</button>
+      </div>
+
+      <div class="auth-tabs">
+        <button [class.active]="authMode() === 'login'" (click)="authMode.set('login')">
+          লগইন (Sign In)
+        </button>
+        <button [class.active]="authMode() === 'register'" (click)="authMode.set('register')">
+          নতুন অ্যাকাউন্ট (Register)
+        </button>
+      </div>
+
+      <div class="modal-body">
+        @if (authError()) {
+          <div class="error-alert">
+            ⚠️ {{ authError() }}
+          </div>
+        }
+
+        @if (authMode() === 'login') {
+          <form (submit)="submitLogin(); $event.preventDefault()">
+            <div class="form-group">
+              <label>ইমেইল অ্যাড্রেস *</label>
+              <input 
+                type="email" 
+                [(ngModel)]="loginForm.email" 
+                name="email" 
+                placeholder="আপনার ইমেইল লিখুন" 
+                required />
+            </div>
+
+            <div class="form-group">
+              <label>পাসওয়ার্ড *</label>
+              <input 
+                type="password" 
+                [(ngModel)]="loginForm.password" 
+                name="password" 
+                placeholder="পাসওয়ার্ড লিখুন" 
+                required />
+            </div>
+
+            <button type="submit" class="btn btn-primary-block mt-4" [disabled]="authLoading()">
+              @if (authLoading()) {
+                অপেক্ষা করুন...
+              } @else {
+                লগইন করুন →
+              }
+            </button>
+          </form>
+        } @else {
+          <form (submit)="submitRegister(); $event.preventDefault()">
+            <div class="form-group">
+              <label>আপনার পূর্ণ নাম *</label>
+              <input 
+                type="text" 
+                [(ngModel)]="registerForm.fullName" 
+                name="fullName" 
+                placeholder="উদা: আরিফুর রহমান" 
+                required />
+            </div>
+
+            <div class="form-group">
+              <label>ইমেইল অ্যাড্রেস * (এই ইমেইলে কোর্স অ্যাক্সেস লিংক যাবে)</label>
+              <input 
+                type="email" 
+                [(ngModel)]="registerForm.email" 
+                name="email" 
+                placeholder="উদা: arif@gmail.com" 
+                required />
+            </div>
+
+            <div class="form-group">
+              <label>মোবাইল নম্বর</label>
+              <input 
+                type="text" 
+                [(ngModel)]="registerForm.phoneNumber" 
+                name="phone" 
+                placeholder="উদা: 01700000000" />
+            </div>
+
+            <div class="form-group">
+              <label>পাসওয়ার্ড * (কমপক্ষে ৬ অক্ষর)</label>
+              <input 
+                type="password" 
+                [(ngModel)]="registerForm.password" 
+                name="password" 
+                placeholder="পাসওয়ার্ড দিন" 
+                minlength="6" 
+                required />
+            </div>
+
+            <button type="submit" class="btn btn-primary-block mt-4" [disabled]="authLoading()">
+              @if (authLoading()) {
+                অ্যাকাউন্ট তৈরি হচ্ছে...
+              } @else {
+                অ্যাকাউন্ট তৈরি করুন →
+              }
+            </button>
+          </form>
+        }
+      </div>
+    </div>
+  </div>
+}
